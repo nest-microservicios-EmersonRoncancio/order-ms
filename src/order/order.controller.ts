@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { Controller, ParseUUIDPipe } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { StatusOrderDto } from './dto/status-order.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller()
 export class OrderController {
@@ -14,18 +15,19 @@ export class OrderController {
   }
 
   @MessagePattern({ cmd: 'findAllOrder' })
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@Payload() paginationDto: PaginationDto) {
+    console.log('paginationDto', paginationDto);
+    return this.orderService.findAll(paginationDto);
   }
 
   @MessagePattern({ cmd: 'findOneOrder' })
-  findOne(@Payload('id') id: string) {
+  findOne(@Payload('id', ParseUUIDPipe) id: string) {
     console.log('id', id);
     return this.orderService.findOne(id);
   }
 
   @MessagePattern({ cmd: 'changeOrderStatus' })
-  changeOrderStatus(@Payload() updateOrderDto: UpdateOrderDto) {
-    throw new RpcException('Order not found');
+  changeOrderStatus(@Payload() updateOrderDto: StatusOrderDto) {
+    return this.orderService.changeOrderStatus(updateOrderDto);
   }
 }
