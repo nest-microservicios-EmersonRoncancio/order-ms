@@ -11,12 +11,12 @@ export class OrderService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async create(createOrderDto: CreateOrderDto) {
-    const order = await this.order.create({
-      data: createOrderDto,
-    });
+  create(createOrderDto: CreateOrderDto) {
+    // const order = await this.order.create({
+    //   data: createOrderDto,
+    // });
 
-    return order;
+    return createOrderDto;
   }
 
   async findAll(paginationDto: PaginationDto) {
