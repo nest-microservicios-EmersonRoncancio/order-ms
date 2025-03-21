@@ -10,7 +10,7 @@ import { NATS_CLIENT } from 'src/configs/services.configs';
         name: NATS_CLIENT,
         transport: Transport.NATS,
         options: {
-          servers: envs.NAT_SERVERS,
+          servers: envs.NATS_SERVER,
         },
       },
     ]),
@@ -21,7 +21,7 @@ import { NATS_CLIENT } from 'src/configs/services.configs';
         name: NATS_CLIENT,
         transport: Transport.NATS,
         options: {
-          servers: envs.NAT_SERVERS,
+          servers: envs.NATS_SERVER,
         },
       },
     ]),
