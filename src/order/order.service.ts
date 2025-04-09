@@ -7,6 +7,7 @@ import { StatusOrderDto } from './dto/status-order.dto';
 import { firstValueFrom } from 'rxjs';
 import { NATS_CLIENT } from 'src/configs';
 import { OrderItemType } from './interfaces/order.interface';
+import { PaymentSuccessDto } from './dto/payment-success.dto';
 
 interface Product {
   id: number;
@@ -180,7 +181,6 @@ export class OrderService extends PrismaClient implements OnModuleInit {
         orderId: order.id,
         currency: 'usd',
         item: order.OrderItem.map((items) => {
-          console.log('items', items.price);
           return {
             name: items.productId,
             unitPrice: items.price,
@@ -191,5 +191,29 @@ export class OrderService extends PrismaClient implements OnModuleInit {
     );
 
     return session;
+  }
+
+  async paidOrder(paymentSucces: PaymentSuccessDto) {
+    const order = await this.order.update({
+      where: {
+        id: paymentSucces.orderId,
+      },
+      data: {
+        status: 'PAID',
+        paid: true,
+        paidAt: new Date(),
+        stripeId: paymentSucces.stripeId,
+
+        Receipt: {
+          create: {
+            receiptUrl: paymentSucces.receiptUrl,
+          },
+        },
+      },
+    });
+
+    console.log('order', order);
+
+    return paymentSucces;
   }
 }
