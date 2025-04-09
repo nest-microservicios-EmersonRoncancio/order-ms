@@ -6,6 +6,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { StatusOrderDto } from './dto/status-order.dto';
 import { firstValueFrom } from 'rxjs';
 import { NATS_CLIENT } from 'src/configs';
+import { OrderItemType } from './interfaces/order.interface';
 
 interface Product {
   id: number;
@@ -76,9 +77,7 @@ export class OrderService extends PrismaClient implements OnModuleInit {
         },
       });
 
-      return {
-        order: order,
-      };
+      return order;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new RpcException({
@@ -173,5 +172,24 @@ export class OrderService extends PrismaClient implements OnModuleInit {
     });
 
     return updatedOrder;
+  }
+
+  async createPaymentSession(order: OrderItemType) {
+    const session: object = await firstValueFrom(
+      this.client.send('create.payment.session', {
+        orderId: order.id,
+        currency: 'usd',
+        item: order.OrderItem.map((items) => {
+          console.log('items', items.price);
+          return {
+            name: items.productId,
+            unitPrice: items.price,
+            quantity: items.quantity,
+          };
+        }),
+      }),
+    );
+
+    return session;
   }
 }
