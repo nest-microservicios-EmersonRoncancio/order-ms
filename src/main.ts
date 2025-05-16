@@ -16,6 +16,7 @@ async function bootstrap() {
       },
     },
   );
+  console.log('NATS_SERVER', envs.NATS_SERVER);
 
   app.useGlobalPipes(
     new ValidationPipe({
