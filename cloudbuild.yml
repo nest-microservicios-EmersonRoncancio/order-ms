@@ -1,0 +1,20 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        docker build -t southamerica-east1-docker.pkg.dev/microservicios-shop/image-registry/orders-ms-prod -f dockerfile.prod --platform=linux/amd64 --build-arg POSTGRES_DB=$$DATABASE_URL .
+    secretEnv: ['DATABASE_URL']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'southamerica-east1-docker.pkg.dev/microservicios-shop/image-registry/orders-ms-prod',
+      ]
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/689245838607/secrets/orders-ms-database/versions/1
+      env: 'DATABASE_URL'
